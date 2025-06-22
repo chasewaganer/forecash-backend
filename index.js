@@ -8,10 +8,12 @@ app.use(bodyParser.json());
 
 const plaid = new PlaidApi(new Configuration({
   basePath: PlaidEnvironments.sandbox,
-  baseOptions: { headers: {
-    'PLAID-CLIENT-ID': process.env.PLAID_CLIENT_ID,
-    'PLAID-SECRET': process.env.PLAID_SECRET,
-  }}
+  baseOptions: {
+    headers: {
+      'PLAID-CLIENT-ID': process.env.PLAID_CLIENT_ID,
+      'PLAID-SECRET': process.env.PLAID_SECRET,
+    }
+  }
 }));
 
 const sb = createClient(
@@ -19,7 +21,7 @@ const sb = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY
 );
 
-// 1️⃣ Link token
+// 1️⃣ Create a Plaid link token
 app.post('/create_link_token', async (req, res) => {
   const { user_id } = req.body;
   try {
@@ -36,7 +38,7 @@ app.post('/create_link_token', async (req, res) => {
   }
 });
 
-// 2️⃣ Exchange tokens
+// 2️⃣ Exchange public token for access token
 app.post('/get_access_token', async (req, res) => {
   const { public_token, user_id } = req.body;
   try {
@@ -52,7 +54,7 @@ app.post('/get_access_token', async (req, res) => {
   }
 });
 
-// 3️⃣ Sync balances
+// 3️⃣ Sync account balances
 app.post('/sync_accounts', async (req, res) => {
   const { user_id } = req.body;
   const { data } = await sb
